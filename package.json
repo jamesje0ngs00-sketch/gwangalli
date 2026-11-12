@@ -1,0 +1,17 @@
+{
+  "name": "gwangalli-beach",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "광안리 해변과 광안대교 선화 애니메이션",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "devDependencies": {
+    "@types/node": "^22.18.0",
+    "typescript": "^5.9.3",
+    "vite": "^7.1.9"
+  }
+}

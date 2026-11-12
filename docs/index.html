@@ -1,0 +1,25 @@
+<!doctype html><html lang="ko"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>광안리 선화</title>
+<meta name="description" content="광안대교가 보이는 광안리 해변, 낮부터 밤까지 펜 선으로.">
+<style>
+  html,body{margin:0;height:100%;overflow:hidden;background:#ebe8e2}
+  body{display:grid;place-items:center}
+  /* 장면은 카드 하나: 바깥 페이지 색은 시간과 상관없이 그대로 */
+  .card{position:relative;width:min(94vw,calc((100vh - 48px) * 2));aspect-ratio:2/1;border-radius:18px;overflow:hidden;
+        box-shadow:0 1px 0 rgba(255,255,255,.7) inset,0 0 0 1px rgba(40,34,26,.10),0 18px 50px -18px rgba(40,34,26,.35),0 4px 14px -6px rgba(40,34,26,.18);
+        --ink:#1c1c1c;touch-action:none;isolation:isolate}
+  #scene,#scene svg{display:block;width:100%;height:100%;user-select:none;-webkit-user-select:none}
+  #scene svg .pp{fill:var(--paper,#fdfdfc)}
+  #scene svg.scrubbing,#scene svg.scrubbing *{cursor:grabbing!important}
+  .hud{position:absolute;left:2.2%;top:3.4%;font:500 clamp(10px,1.25vw,15px)/1.3 "Nanum Myeongjo","Batang","AppleMyungjo",Georgia,serif;color:var(--ink);letter-spacing:.04em;pointer-events:none;opacity:.85}
+  .hud b{font-weight:600;font-variant-numeric:tabular-nums;letter-spacing:.06em}
+  .hud span{margin-left:6px;font-size:.9em}
+  #hint{position:absolute;left:0;right:0;bottom:3%;margin:0;text-align:center;font:clamp(10px,1.15vw,14px)/1.4 "Nanum Myeongjo","Batang",Georgia,serif;color:var(--ink);opacity:.7;pointer-events:none;transition:opacity 1.2s}
+  #hint.gone{opacity:0}
+  .capture #hint{display:none}
+</style></head><body>
+<div class="card" id="card">
+  <div id="scene"></div>
+  <div class="hud" id="clock"></div>
+  <p id="hint">해를 끌어 시간을 바꾸고 · 다리와 바다, 사람을 눌러 보세요</p>
+</div>
+<script type="module" src="./src/main.js"></script></body></html>
