@@ -11,6 +11,7 @@
   },
   "devDependencies": {
     "@types/node": "^22.18.0",
+    "esbuild-wasm": "^0.24.0",
     "typescript": "^5.9.3",
     "vite": "^7.1.9"
   }

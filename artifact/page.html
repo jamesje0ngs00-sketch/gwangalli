@@ -1,0 +1,51 @@
+<title>광안리 선화</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700&display=swap">
+<style>
+  /* 레이아웃: 화면 가운데 2:1 그림 카드 하나. 바깥 페이지 색은 그림 속 시간과 상관없이 고정 */
+  :root {
+    --page: #ebe8e2;
+    --card-edge: rgba(40, 34, 26, .10);
+    --card-shadow: rgba(40, 34, 26, .35);
+    --paper: #fdfcf8;
+    --ink: #1c1c1c;
+    --serif: "Nanum Myeongjo", "Batang", "AppleMyungjo", Georgia, serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --page: #17181d; --card-edge: rgba(255, 255, 255, .08); --card-shadow: rgba(0, 0, 0, .6); color-scheme: dark; }
+  }
+  :root[data-theme="dark"] { --page: #17181d; --card-edge: rgba(255, 255, 255, .08); --card-shadow: rgba(0, 0, 0, .6); color-scheme: dark; }
+
+  html, body { height: 100%; overflow: hidden; }
+  body {
+    margin: 0; background: var(--page);
+    display: grid; place-items: center;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+    padding-block: 12px; box-sizing: border-box;
+  }
+  .card {
+    position: relative; width: min(100%, calc((100vh - 48px) * 2)); max-width: 100%; aspect-ratio: 2 / 1;
+    border-radius: 18px; overflow: hidden; background: var(--paper);
+    box-shadow: 0 0 0 1px var(--card-edge), 0 18px 50px -18px var(--card-shadow), 0 4px 14px -6px var(--card-shadow);
+    touch-action: none; isolation: isolate;
+  }
+  #scene, #scene svg { display: block; width: 100%; height: 100%; user-select: none; -webkit-user-select: none; }
+  #scene svg .pp { fill: var(--paper, #fdfdfc); }
+  #scene svg.scrubbing, #scene svg.scrubbing * { cursor: grabbing !important; }
+  .hud { position: absolute; left: 2.2%; top: 3.4%; font: 500 clamp(10px, 1.25vw, 15px)/1.3 var(--serif); color: var(--ink); letter-spacing: .04em; pointer-events: none; opacity: .85; }
+  .hud b { font-weight: 700; font-variant-numeric: tabular-nums; letter-spacing: .06em; }
+  .hud span { margin-left: 6px; font-size: .9em; }
+  #hint { position: absolute; left: 0; right: 0; bottom: 3%; margin: 0; text-align: center; font: clamp(9px, 1.15vw, 14px)/1.4 var(--serif); color: var(--ink); opacity: .7; pointer-events: none; transition: opacity 1.2s; }
+  #hint.gone { opacity: 0; }
+  .capture #hint { display: none; }
+  @media (prefers-reduced-motion: reduce) { #hint { transition: none; } }
+</style>
+<div class="card" id="card">
+  <div id="scene"></div>
+  <div class="hud" id="clock"></div>
+  <p id="hint">해를 끌어 시간을 바꾸고 · 다리와 바다, 사람을 눌러 보세요</p>
+</div>
+<script>/*BUNDLE*/</script>
