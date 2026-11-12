@@ -30,7 +30,7 @@ const glow = layer(svg, { style: 'mix-blend-mode:screen;pointer-events:none' });
 const halo = layer(glow, { filter: 'url(#b-blur)' });
 
 // ------------------------------------------------------------------ 시간
-let tau = q.has('tau') ? +q.get('tau')  : q.has('start') ? +q.get('start')  : 0.68;
+let tau = q.has('tau') ? +q.get('tau')  : q.has('start') ? +q.get('start')  : 0.72;
 let scrub                = null, frozenTau = q.has('tau');
 const DAY_SECONDS = q.has('day') ? +q.get('day')  : 180;
 // 하루를 빨리 돌려도 사람 걸음은 그대로, 대신 더 자주 나타난다
@@ -63,16 +63,21 @@ on(yacht.g, () => yacht.poke());
 on(gulls.hit, () => gulls.flush());
 skyL.addEventListener('pointerdown', (e) => { const p = toSvg(e                ); if (p.y < HORIZON - 30 && P.night > 0.45) { drones.start(); hint.done(); } });
 
-// 머무는 사람들: 시간대에 따라 나타나고 사라진다
+// 잠시 머물다 가는 사람들: 날마다 조금씩 다른 시간에 와서 몇 시간 있다 간다
 const kid = createKid(peopleL, glow, { x: 516, y: 349, washY: () => sea.washY }, STRIPES);
 const busker = createBusker(peopleL, glow, { x: 800, y: 440 }, STRIPES);
 const picnic = createPicnic(peopleL, glow, { x: 170, y: 448 }, STRIPES);
 on(kid.g, () => kid.poke()); on(busker.g, () => busker.poke()); on(picnic.g, () => picnic.poke());
-const stay = [
-  { o: kid, when: (u        ) => u > 0.3 && u < 0.72 },
-  { o: busker, when: (u        ) => u > 0.64 || u < 0.14 },
-  { o: picnic, when: (u        ) => u > 0.56 || u < 0.15 },
+// 오는 시각(τ) 범위와 머무는 길이(τ). 0.01τ ≈ 14분
+const VISITS = [
+  { o: kid, start: [0.42, 0.5], len: [0.08, 0.12] },      // 오전 10시~정오에 와서 2~3시간
+  { o: busker, start: [0.75, 0.8], len: [0.14, 0.18] },   // 저녁 6~7시에 와서 3시간 반~4시간
+  { o: picnic, start: [0.73, 0.78], len: [0.17, 0.22] },  // 해 질 녘에 와서 4~5시간
 ];
+const stay = VISITS.map((v) => ({ o: v.o, a: 0, b: 0, roll() { this.a = rnd(v.start[0], v.start[1]); this.b = (this.a + rnd(v.len[0], v.len[1])) % 1; } }));
+stay.forEach((s) => s.roll());
+const inWindow = (u        , a        , b        ) => (a < b ? u > a && u < b : u > a || u < b);
+let lastDayTau = tau;
 
 // 지나가는 사람들
 const LANES = [370, 392, 414];
@@ -118,7 +123,7 @@ run((t, dt) => {
   sea.draw(t, dt, P, wind.value);
   bridge.draw(t, dt, P);
   yacht.draw(t, dt, P, wind.value);
-  gulls.draw(t, dt, P, wind.value);
+  gulls.draw(t, dt, P, wind.value, tau > 0.79 || tau < 0.24); // 밤에는 잠자리로 날아간다
   // 밤 9시가 되면 드론쇼가 한 번 열린다
   if (lastTau < 0.875 && tau >= 0.875 && !frozenTau) drones.start();
   lastTau = tau;
@@ -144,12 +149,10 @@ run((t, dt) => {
     p.draw(t, dt, P, wind.value);
     if (p.done) { p.remove(); people.splice(i, 1); }
   }
-  stay.forEach((s) => {
-    const shown = s.when(tau);
-    s.o.g.style.display = shown ? '' : 'none';
-    s.o.glows.forEach((n) => ((n              ).style.display = shown ? '' : 'none')); // 사람이 떠나면 불빛도 함께
-    if (shown) s.o.draw(t, dt, P, wind.value);
-  });
+  // 아침 6시를 지나면 새 하루: 오늘 올 시각을 다시 정한다(지금 머무는 사람은 그대로)
+  if (lastDayTau < 0.25 && tau >= 0.25) stay.forEach((s) => { if (!inWindow(tau, s.a, s.b)) s.roll(); });
+  lastDayTau = tau;
+  stay.forEach((s) => s.o.draw(t, dt, P, wind.value, inWindow(tau, s.a, s.b)));
   // 앞뒤 순서: 아래(가까운) 것이 위에 그려지게
   [...people, ...stay.map((s) => s.o)].sort((a, b) => a.y - b.y).forEach((p) => peopleL.appendChild(p.g));
 
@@ -157,4 +160,4 @@ run((t, dt) => {
   clock.innerHTML = `<b>${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}</b> <span>${period(hrs)}</span>`;
 });
 
-(window                                   ).__beach = { setTau: (v        ) => { tau = v; frozenTau = true; }, get tau() { return tau; }, bridge, sea, people, addWalker, kid, busker, picnic, gulls, yacht, drones };
+(window                                   ).__beach = { setTau: (v        ) => { tau = v; frozenTau = true; }, get tau() { return tau; }, bridge, sea, people, addWalker, kid, busker, picnic, gulls, yacht, drones, stay };

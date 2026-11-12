@@ -5,7 +5,7 @@ import { minJerk } from '../lib/motion.js';
 import { W, HORIZON, SP, smooth, ease, rnd, srnd, clamp, lerp } from './kit.js';
 
 // ------------------------------------------------------------------ 갈매기
-                                                                                                                                                                                                 
+                                                                                                                                                                                                          
                                                                                                                
 
 export function createGulls(parent         , sky         ) {
@@ -46,8 +46,12 @@ export function createGulls(parent         , sky         ) {
     flush() {
       ground.forEach((g) => { if (g.state !== 'stand') return; g.state = 'fly'; g.t = 0; g.vx = rnd(18, 34) * (Math.random() < 0.5 ? 1 : -1); g.vy = rnd(-34, -24); });
     },
-    draw(t        , dt        , P         , wind        ) {
+    draw(t        , dt        , P         , wind        , roost = false) {
       ground.forEach((g) => {
+        // 해 질 무렵 하나씩 잠자리로 떠나고, 아침에 하나씩 돌아온다
+        if (roost && g.state === 'stand' && Math.random() < dt * 0.15) { g.state = 'fly'; g.t = 0; g.vx = rnd(18, 30) * (g.x < W / 2 ? -1 : 1); g.vy = rnd(-30, -20); }
+        if (!roost && g.state === 'away' && Math.random() < dt * 0.2) { g.state = 'land'; g.t = 0; g.tx = g.hx < W / 2 ? -30 : W + 30; g.ty = rnd(120, 180); }
+        if (g.state === 'away') { [g.body, g.wing, g.legs, g.beak, g.eye].forEach((n) => n.setAttribute('d', '')); return; }
         if (g.state === 'stand') {
           g.peck -= dt; if (g.peck < 0) { g.peck = rnd(2, 6); if (Math.random() < 0.3) g.dir = g.dir === 1 ? -1 : 1; }
           drawStand(g, t, P);
@@ -55,8 +59,9 @@ export function createGulls(parent         , sky         ) {
           g.t += dt;
           g.vy = lerp(g.vy, -2 + Math.sin(g.t + g.ph) * 6, dt * 0.6);
           g.x += (g.vx + wind * 6) * dt; g.y += g.vy * dt;
+          if (roost && (g.x > W + 20 || g.x < -20)) { g.state = 'away'; return; }
           if (g.x > W + 20) g.x = -20; if (g.x < -20) g.x = W + 20;
-          if (g.t > rnd(9, 10)) { g.state = 'land'; g.t = 0; g.tx = g.x; g.ty = g.y; }
+          if (!roost && g.t > rnd(9, 10)) { g.state = 'land'; g.t = 0; g.tx = g.x; g.ty = g.y; }
           drawFly(g, t, 1);
         } else {
           // 원래 자리로 미끄러지듯 내려앉기
