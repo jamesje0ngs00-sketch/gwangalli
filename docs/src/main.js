@@ -70,8 +70,8 @@ const picnic = createPicnic(peopleL, glow, { x: 170, y: 448 }, STRIPES);
 on(kid.g, () => kid.poke()); on(busker.g, () => busker.poke()); on(picnic.g, () => picnic.poke());
 const stay = [
   { o: kid, when: (u        ) => u > 0.3 && u < 0.72 },
-  { o: busker, when: (u        ) => u > 0.64 || u < 0.06 },
-  { o: picnic, when: (u        ) => u > 0.56 || u < 0.1 },
+  { o: busker, when: (u        ) => u > 0.64 || u < 0.14 },
+  { o: picnic, when: (u        ) => u > 0.56 || u < 0.15 },
 ];
 
 // 지나가는 사람들
@@ -147,6 +147,7 @@ run((t, dt) => {
   stay.forEach((s) => {
     const shown = s.when(tau);
     s.o.g.style.display = shown ? '' : 'none';
+    s.o.glows.forEach((n) => ((n              ).style.display = shown ? '' : 'none')); // 사람이 떠나면 불빛도 함께
     if (shown) s.o.draw(t, dt, P, wind.value);
   });
   // 앞뒤 순서: 아래(가까운) 것이 위에 그려지게

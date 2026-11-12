@@ -21,7 +21,7 @@ export function createKid(parent: Element, glow: Element, o: { x: number; y: num
   place(g, o.x, o.y, dir, s);
   void glow;
   return {
-    g, y: o.y,
+    g, y: o.y, glows: [] as Element[],
     poke() { if (cheer < 0) cheer = 0; },
     draw(t: number, dt: number, P: Palette, wind: number) {
       const wet = o.washY() > o.y - 4;
@@ -74,7 +74,7 @@ export function createBusker(parent: Element, glow: Element, o: { x: number; y: 
     if (big) notes[notes.length - 1].v *= 2;
   };
   return {
-    g, y: o.y,
+    g, y: o.y, glows: [ampGlow] as Element[],
     poke() { burst = 2.4; for (let i = 0; i < 4; i++) setTimeout(() => addNote(true), i * 120); },
     draw(t: number, dt: number, P: Palette, wind: number) {
       burst = Math.max(0, burst - dt);
@@ -134,7 +134,7 @@ export function createPicnic(parent: Element, glow: Element, o: { x: number; y: 
   let cheers = -1, sipA = rnd(2, 6), sipB = rnd(4, 9), laugh = 0;
   const sipping = (v: number) => (v > 0 && v < 1.6 ? Math.sin((v / 1.6) * Math.PI) : 0);
   return {
-    g, y: o.y,
+    g, y: o.y, glows: [lanternGlow] as Element[],
     poke() { if (cheers < 0) cheers = 0; },
     draw(t: number, dt: number, P: Palette, wind: number) {
       mat.setAttribute('d', `M${f(o.x - 56)} ${f(o.y - 5)} L${f(o.x + 56)} ${f(o.y - 5)} L${f(o.x + 62)} ${f(o.y + 4)} L${f(o.x - 62)} ${f(o.y + 4)}Z`);
